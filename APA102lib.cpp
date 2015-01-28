@@ -1,5 +1,5 @@
 #include "SPI.h"
-#include "WS2801.h"
+#include "APA102lib.h"
 
 // Example to control APA102-based RGB LED Modules in a strand or strip
 // Written by MatanLed
@@ -7,26 +7,26 @@
 /*****************************************************************************/
 
 // Constructor for use with hardware SPI (specific clock/data pins):
-WS2801::WS2801(uint16_t n) {
+APA102::APA102(uint16_t n) {
   alloc(n);
   updatePins();
 }
 
 // Constructor for use with arbitrary clock/data pins:
-WS2801::WS2801(uint16_t n, uint8_t dpin, uint8_t cpin) {
+APA102::APA102(uint16_t n, uint8_t dpin, uint8_t cpin) {
   alloc(n);
   updatePins(dpin, cpin);
 }
 
 // Allocate 3 bytes per pixel, init to RGB 'off' state:
-void WS2801::alloc(uint16_t n) {
+void APA102::alloc(uint16_t n) {
   begun   = false;
   numLEDs = n;
   pixels  = (uint8_t *)calloc(n, 3);
 }
 
 // Activate hard/soft SPI as appropriate:
-void WS2801::begin(void) {
+void APA102::begin(void) {
   if(hardwareSPI == true) {
     startSPI();
   } else {
@@ -37,7 +37,7 @@ void WS2801::begin(void) {
 }
 
 // Change pin assignments post-constructor, switching to hardware SPI:
-void WS2801::updatePins(void) {
+void APA102::updatePins(void) {
   hardwareSPI = true;
   datapin     = clkpin = 0;
   // If begin() was previously invoked, init the SPI hardware now:
@@ -49,7 +49,7 @@ void WS2801::updatePins(void) {
 }
 
 // Change pin assignments post-constructor, using arbitrary pins:
-void WS2801::updatePins(uint8_t dpin, uint8_t cpin) {
+void APA102::updatePins(uint8_t dpin, uint8_t cpin) {
 
   if(begun == true) { // If begin() was previously invoked...
     // If previously using hardware SPI, turn that off:
@@ -72,7 +72,7 @@ void WS2801::updatePins(uint8_t dpin, uint8_t cpin) {
 }
 
 // Enable SPI hardware and set up protocol details:
-void WS2801::startSPI(void) {
+void APA102::startSPI(void) {
     SPI.begin();
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
@@ -83,11 +83,11 @@ void WS2801::startSPI(void) {
 	
 }
 
-uint16_t WS2801::numPixels(void) {
+uint16_t APA102::numPixels(void) {
   return numLEDs;
 }
 
-void WS2801::show(void) {
+void APA102::show(void) {
   uint16_t i, nl3 = numLEDs; 
   uint8_t  bit,t,c;
   
@@ -150,7 +150,7 @@ void WS2801::show(void) {
 }
 
 // Set pixel color from separate 8-bit R, G, B components:
-void WS2801::setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
+void APA102::setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
   if(n < numLEDs) { // Arrays are 0-indexed, thus NOT '<='
     uint8_t *p = &pixels[n * 3];
     *p++ = b; //the order of sending data is Blue, Green, Red
@@ -160,7 +160,7 @@ void WS2801::setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
 }
 
 // Set pixel color from 'packed' 32-bit RGB value:
-void WS2801::setPixelColor(uint16_t n, uint32_t c) {
+void APA102::setPixelColor(uint16_t n, uint32_t c) {
   if(n < numLEDs) { // Arrays are 0-indexed, thus NOT '<='
     uint8_t *p = &pixels[n * 3];
     *p++ = c >> 16; //the order of sending data is Blue, Green, Red. 
