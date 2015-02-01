@@ -1,3 +1,6 @@
+APA102lib support apa102 led strip connection to ATmega328p based boards such as arduino uno, nano and pro-mini.
+It should works with Arduino mega and maybe with more boards, but never tested.
+
 This lib is based on Adafruit lib to ws2801. Changed to be usable with apa102 led pixels.
 The original library can be found here: https://github.com/adafruit/Adafruit-WS2801-Library
 
